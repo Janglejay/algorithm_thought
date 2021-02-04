@@ -1,61 +1,53 @@
-package data_structure.union_find;
+package search_graph_theory.bfs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.StringTokenizer;
+import java.util.*;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class PointLevel {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
-    public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
-            }
+    static int n;
+    static int m;
+    static List<List<Integer>> graph = new ArrayList<>();
+    static int[] dist;
+    private static void add(int a, int b) {
+        if (a == b) {
+            return;
         }
+        graph.get(a).add(b);
+    }
+    public static void main(String[] args) {
+        n = in.nextInt();
+        m = in.nextInt();
+        dist = new int[n + 1];
+        Arrays.fill(dist, -1);
+        for (int i = 0; i < n + 1; i++) graph.add(new ArrayList<>());
+        for (int i = 0; i < m; i++) add(in.nextInt(), in.nextInt());
+        int res = bfs();
+        out.println(res);
         out.flush();
         out.close();
     }
-
+    private static int bfs() {
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.add(1);
+        dist[1] = 0;
+        while (!queue.isEmpty()) {
+            Integer idx = queue.poll();
+            List<Integer> list = graph.get(idx);
+            for (int x : list) {
+                if (dist[x] == -1) {
+                    dist[x] = dist[idx] + 1;
+                    queue.offer(x);
+                }
+            }
+        }
+        return dist[n];
+    }
     private static class MyWriter {
 
         private PrintWriter out;

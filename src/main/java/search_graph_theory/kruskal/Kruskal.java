@@ -1,61 +1,92 @@
-package data_structure.union_find;
+package search_graph_theory.kruskal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.StringTokenizer;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class Kruskal {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
+    static int n;
+    static int m;
+    static UnionFind unionFind;
+    static List<Edge> graph = new ArrayList<>();
+    private static class UnionFind {
+        int[] parent;
 
-    public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
+        public UnionFind(int n) {
+            parent = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
             }
+        }
+
+        public boolean union(int x, int y) {
+            if (find(x) == find(y)) {
+                return false;
+            }
+            parent[find(x)] = find(y);
+            return true;
+        }
+
+        public int find(int index) {
+            if (parent[index] != index) {
+                parent[index] = find(parent[index]);
+            }
+            return parent[index];
+        }
+    }
+    private static class Edge{
+        private int start;
+        private int end;
+        private int weight;
+
+        public Edge(int start, int end, int weight) {
+            this.start = start;
+            this.end = end;
+            this.weight = weight;
+        }
+    }
+    private static void add(int a, int b, int v) {
+        graph.add(new Edge(a, b, v));
+    }
+    public static void main(String[] args) {
+        n = in.nextInt();
+        m = in.nextInt();
+        unionFind = new UnionFind(n + 1);
+        for (int i = 0; i < m; i++) {
+            add(in.nextInt(), in.nextInt(), in.nextInt());
+        }
+        int res = kruskal();
+        if (res == Integer.MAX_VALUE / 2) {
+            out.println("impossible");
+        }else {
+            out.println(res);
         }
         out.flush();
         out.close();
     }
-
+    private static int kruskal() {
+        int sum = 0;
+        int count = 0;
+        graph.sort(Comparator.comparingInt(a -> a.weight));
+        for (Edge e : graph) {
+            if (unionFind.union(e.start, e.end)) {
+                sum += e.weight;
+                count++;
+            }
+        }
+        if (count < n - 1) {
+            return Integer.MAX_VALUE / 2;
+        }
+        return sum;
+    }
     private static class MyWriter {
 
         private PrintWriter out;
@@ -143,4 +174,5 @@ public class UnionFindTest {
             }
         }
     }
+
 }

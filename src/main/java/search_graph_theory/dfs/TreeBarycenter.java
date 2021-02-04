@@ -1,59 +1,52 @@
-package data_structure.union_find;
+package search_graph_theory.dfs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class TreeBarycenter {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
+    static int n;
+    static List<List<Integer>> graph = new ArrayList<>();
+    static boolean[] st;
+    static int res = Integer.MAX_VALUE;
+    private static void add(int a, int b) {
+        graph.get(a).add(b);
+        graph.get(b).add(a);
+    }
 
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
-            }
-        }
+        n = in.nextInt();
+        st = new boolean[n + 1];
+        for (int i = 0; i < n + 1; i++) graph.add(new ArrayList<>());
+        for (int i = 0; i < n - 1; i++) add(in.nextInt(), in.nextInt());
+        dfs(1);
+        out.println(res);
         out.flush();
         out.close();
+    }
+    private static int dfs(int cur) {
+        st[cur] = true;
+        List<Integer> list = graph.get(cur);
+        int sum = 1;
+        int max = 0;
+        for (int x : list) {
+            if (!st[x]) {
+                int number = dfs(x);
+                max = Math.max(number, max);
+                sum += number;
+                st[x] = false;
+            }
+        }
+        max = Math.max(max, n - sum);
+        res = Math.min(res, max);
+        return sum;
     }
 
     private static class MyWriter {

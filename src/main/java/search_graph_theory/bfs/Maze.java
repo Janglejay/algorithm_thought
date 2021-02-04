@@ -1,61 +1,55 @@
-package data_structure.union_find;
+package search_graph_theory.bfs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.StringTokenizer;
+import java.util.*;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class Maze {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
+    static int n;
+    static int m;
+    static int[][] map;
+    static int[][] dist;
+    static int[] dx = new int[]{-1, 0, 1, 0};
+    static int[] dy = new int[]{0, 1, 0, -1};
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
+        n = in.nextInt();
+        m = in.nextInt();
+        map = new int[n + 1][m + 1];
+        for (int i = 1; i < n + 1; i++) {
+            for (int j = 1; j < m + 1; j++) {
+                map[i][j] = in.nextInt();
             }
         }
+        dist = new int[n + 1][m + 1];
+        for (int i = 0; i < n + 1; i++) Arrays.fill(dist[i], -1);
+        dist[1][1] = 0;
+        int res = bfs();
+        out.println(res);
         out.flush();
         out.close();
     }
-
+    private static int bfs() {
+        Queue<int[]> queue = new ArrayDeque<>();
+        queue.add(new int[]{1, 1});
+        while (!queue.isEmpty()) {
+            int[] p = queue.poll();
+            for (int i = 0; i < 4; i++) {
+                int x = dx[i] + p[0];
+                int y = dy[i] + p[1];
+                if (x < 1 || y < 1 || x > n || y > m || map[x][y] == 1 || dist[x][y] != -1) {
+                    continue;
+                }
+                dist[x][y] = dist[p[0]][p[1]] + 1;
+                queue.offer(new int[]{x, y});
+            }
+        }
+        return dist[n][m];
+    }
     private static class MyWriter {
 
         private PrintWriter out;

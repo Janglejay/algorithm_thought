@@ -1,57 +1,60 @@
-package data_structure.union_find;
+package search_graph_theory.staining_method;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class Hungary {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
+    static int n1;
+    static int n2;
+    static int m;
+    static List<List<Integer>> graph = new ArrayList<>();
+    static int[] match;
+    static boolean[] st;
 
-    public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
+    private static void add(int a, int b) {
+        graph.get(a).add(b);
+    }
+
+    private static boolean hungary(int x) {
+        List<Integer> list = graph.get(x);
+        for (int ii : list) {
+            // 对于每个单次匹配这个元素已经考虑过了，就不要重复考虑
+            if (!st[ii]) {
+                st[ii] = true;
+                // ii未匹配，或者 它匹配的元素 可以做出退让
+                if (match[ii] == 0 || hungary(match[ii])) {
+                    match[ii] = x;
+                    return true;
                 }
             }
         }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        n1 = in.nextInt();
+        n2 = in.nextInt();
+        m = in.nextInt();
+        match = new int[n2 + 1];
+        st = new boolean[n2 + 1];
+        for (int i = 0; i < n1 + 1; i++) graph.add(new ArrayList<>());
+        for (int i = 0; i < m; i++) add(in.nextInt(), in.nextInt());
+        int res = 0;
+        //选择任意一个点集进行枚举
+        for (int i = 1; i <= n1; i++) {
+            Arrays.fill(st, false);
+            if (hungary(i)) res++;
+        }
+        out.println(res);
         out.flush();
         out.close();
     }

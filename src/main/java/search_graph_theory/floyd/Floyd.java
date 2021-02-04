@@ -1,4 +1,4 @@
-package data_structure.union_find;
+package search_graph_theory.floyd;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,54 +6,54 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class Floyd {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
+    static int n;
+    static int m;
+    static int k;
+    static int[][] dist;
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
+        n = in.nextInt();
+        m = in.nextInt();
+        k = in.nextInt();
+        dist = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (i == j) {
+                    dist[i][j] = 0;
                 } else {
-                    out.println("No");
+                    dist[i][j] = Integer.MAX_VALUE / 2;
                 }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            int a = in.nextInt();
+            int b = in.nextInt();
+            int v = in.nextInt();
+            dist[a][b] = Math.min(dist[a][b], v);
+        }
+        floyd();
+        for (int i = 0; i < k; i++) {
+            int a = in.nextInt();
+            int b = in.nextInt();
+            if (dist[a][b] >= Integer.MAX_VALUE / 4) {
+                out.println("impossible");
+            }else {
+                out.println(dist[a][b]);
             }
         }
         out.flush();
         out.close();
+    }
+    private static void floyd() {
+        for (int k = 1; k < n + 1; k++) {
+            for (int i = 1; i < n + 1; i++) {
+                for (int j = 1; j < n + 1; j ++)
+                    dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+            }
+        }
     }
 
     private static class MyWriter {

@@ -1,59 +1,53 @@
-package data_structure.union_find;
+package search_graph_theory.dfs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class QueenProblem {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
+    static int n;
+    static boolean[] col;
+    static boolean[] diagonal;
+    static boolean[] backDiagonal;
+    static char[][] map;
 
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
-            }
-        }
+        n = in.nextInt();
+        col = new boolean[n];
+        diagonal = new boolean[n << 1];
+        backDiagonal = new boolean[n << 1];
+        map = new char[n][n];
+        for (int i = 0; i < n; i++) Arrays.fill(map[i], '.');
+        dfs(0);
         out.flush();
         out.close();
+    }
+
+    private static void dfs(int num) {
+        if (num == n) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++)
+                    out.print(map[i][j]);
+                out.println();
+            }
+            out.println();
+            return;
+        }
+        for (int j = 0; j < n; j++) {
+            if (!col[j] && !diagonal[num - j + n] && !backDiagonal[num + j]) {
+                col[j] = diagonal[num - j + n] = backDiagonal[num + j] = true;
+                map[num][j] = 'Q';
+                dfs(num + 1);
+                map[num][j] = '.';
+                col[j] = diagonal[num - j + n] = backDiagonal[num + j] = false;
+            }
+        }
     }
 
     private static class MyWriter {

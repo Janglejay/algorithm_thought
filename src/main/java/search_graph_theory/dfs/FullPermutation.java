@@ -1,61 +1,44 @@
-package data_structure.union_find;
+package search_graph_theory.dfs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class FullPermutation {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
 
+    static List<Integer> res = new ArrayList<>();
+    static boolean[] st;
+    static int n;
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
-            }
-        }
+        n = in.nextInt();
+        st = new boolean[n + 1];
+        dfs(0, new ArrayList<>());
         out.flush();
         out.close();
     }
-
+    private static void dfs(int num, List<Integer> list) {
+        if (num == n) {
+            for (int ii : list) out.println(ii + " ");
+            out.println();
+            return;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (!st[i]) {
+                list.add(i);
+                st[i] = true;
+                dfs(num + 1, list);
+                st[i] = false;
+                list.remove(list.size() - 1);
+            }
+        }
+    }
     private static class MyWriter {
 
         private PrintWriter out;

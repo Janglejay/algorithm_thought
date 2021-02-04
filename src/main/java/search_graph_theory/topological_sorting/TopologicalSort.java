@@ -1,61 +1,55 @@
-package data_structure.union_find;
+package search_graph_theory.topological_sorting;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.StringTokenizer;
+import java.util.*;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class TopologicalSort {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
+    static int n;
+    static int m;
+    static List<List<Integer>> graph = new ArrayList<>();
+    static List<Integer> res = new ArrayList<>();
+    static int[] indegree;
+    private static void add(int a, int b) {
+        graph.get(a).add(b);
+        indegree[b]++;
+    }
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
-            }
+        n = in.nextInt();
+        m = in.nextInt();
+        indegree = new int[n + 1];
+        for (int i = 0; i < n + 1; i++) graph.add(new ArrayList<>());
+        for (int i = 0; i < m; i++) add(in.nextInt(), in.nextInt());
+        if (topSort()) {
+            for (int x : res) out.print(x + " ");
+            out.println();
+        }else {
+            out.println("-1");
         }
         out.flush();
         out.close();
     }
-
+    private static boolean topSort() {
+        Queue<Integer> queue = new ArrayDeque<>();
+        for (int i = 1; i < n + 1; i++) if (indegree[i] == 0) queue.add(i);
+        while (!queue.isEmpty()) {
+            int idx = queue.poll();
+            res.add(idx);
+            List<Integer> list = graph.get(idx);
+            for (int x : list) {
+                indegree[x]--;
+                if (indegree[x] == 0) {
+                    queue.add(x);
+                }
+            }
+        }
+        return res.size() == n;
+    }
     private static class MyWriter {
 
         private PrintWriter out;

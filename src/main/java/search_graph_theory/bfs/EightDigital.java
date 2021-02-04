@@ -1,59 +1,54 @@
-package data_structure.union_find;
+package search_graph_theory.bfs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class EightDigital {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
+    static String start = "";
+    static Map<String, Integer> map = new HashMap<>();
+    static int[] dx = new int[]{-1, 0, 1, 0};
+    static int[] dy = new int[]{0, 1, 0, -1};
 
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
+        start = Arrays.stream(in.nextLine().split(" ")).collect(Collectors.joining());
+        int res = bfs();
+        out.println(res);
+        out.flush();
+        out.close();
+    }
+
+    private static int bfs() {
+        String end = "12345678x";
+        map.put(start, 0);
+        Queue<String> queue = new ArrayDeque<>();
+        queue.add(start);
+        while (!queue.isEmpty()) {
+            String str = queue.poll();
+            int idx = str.indexOf("x");
+            for (int i = 0; i < 4; i++) {
+                int x = dx[i] + idx / 3;
+                int y = dy[i] + idx % 3;
+                if (x < 0 || y < 0 || x >= 3 || y >= 3) continue;
+                char[] cs = str.toCharArray();
+                cs[idx] = cs[x * 3 + y];
+                cs[x * 3 + y] = 'x';
+                String temp = new String(cs);
+                if (map.containsKey(temp)) continue;
+                map.put(temp, map.get(str) + 1);
+                queue.offer(temp);
+                if (temp.equals(end)) {
+                    break;
                 }
             }
         }
-        out.flush();
-        out.close();
+        return map.get(end) == null ? -1 : map.get(end);
     }
 
     private static class MyWriter {

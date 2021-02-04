@@ -1,59 +1,59 @@
-package data_structure.union_find;
+package search_graph_theory.dijkstra;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class SimpleDijkstra {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
+    static int n;
+    static int m;
+    static int[][] graph;
+    static int[] dist;
+    static boolean[] st;
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
-            }
+        n = in.nextInt();
+        m = in.nextInt();
+        graph = new int[n + 1][n + 1];
+        dist = new int[n + 1];
+        st = new boolean[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE / 2);
+        for (int i = 0; i < n + 1; i++) Arrays.fill(graph[i], Integer.MAX_VALUE / 2);
+        for (int i = 0; i < m; i++) {
+            int a = in.nextInt();
+            int b = in.nextInt();
+            int v = in.nextInt();
+            graph[a][b] = Math.min(graph[a][b], v);
         }
+        int res = dijkstra();
+        out.println(res);
         out.flush();
         out.close();
+    }
+
+    private static int dijkstra() {
+        dist[1] = 0;
+        for (int i = 1; i < n + 1; i++) {
+            int idx = -1;
+            for (int j = 1; j < n + 1; j++) {
+                if (!st[j] && (idx == -1 || dist[idx] > dist[j])) {
+                    idx = j;
+                }
+            }
+            st[idx] = true;
+            for (int j = 1; j < n + 1; j++) {
+                dist[j] = Math.min(dist[j], dist[idx] + graph[idx][j]);
+            }
+        }
+        if (dist[n] == Integer.MAX_VALUE / 2) {
+            return -1;
+        }
+        return dist[n];
     }
 
     private static class MyWriter {

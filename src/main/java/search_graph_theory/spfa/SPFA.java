@@ -1,61 +1,70 @@
-package data_structure.union_find;
+package search_graph_theory.spfa;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.StringTokenizer;
+import java.util.*;
 
-class UnionFind {
-    int[] parent;
-
-    public UnionFind(int n) {
-        parent = new int[n];
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-        }
-    }
-
-    public void union(int x, int y) {
-        parent[find(x)] = find(y);
-    }
-
-    public int find(int index) {
-        if (parent[index] != index) {
-            parent[index] = find(parent[index]);
-        }
-        return parent[index];
-    }
-}
-
-public class UnionFindTest {
+public class SPFA {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
+    static int n;
+    static int m;
+    static int[] dist;
+    static boolean[] inQueue;
+    static List<List<Pair>> graph = new ArrayList<>();
+    private static void add(int a, int b, int v) {
+        graph.get(a).add(new Pair(b, v));
+    }
+    private static class Pair{
+        private int position;
+        private int weight;
 
+        public Pair(int position, int weight) {
+            this.position = position;
+            this.weight = weight;
+        }
+    }
     public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        UnionFind unionFind = new UnionFind(n + 1);
-        while (m-- > 0) {
-            String str = in.nextLine();
-            String[] ss = str.split(" ");
-            int x = Integer.parseInt(ss[1]);
-            int y = Integer.parseInt(ss[2]);
-            if ("M".equals(ss[0])) {
-                unionFind.union(x, y);
-            } else {
-                if (unionFind.find(x) == unionFind.find(y)) {
-                    out.println("Yes");
-                } else {
-                    out.println("No");
-                }
-            }
+        n = in.nextInt();
+        m = in.nextInt();
+        dist = new int[n + 1];
+        inQueue = new boolean[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE / 2);
+        for (int i = 0; i < n + 1; i++) graph.add(new ArrayList<>());
+        for (int i = 0; i < m; i++) {
+            add(in.nextInt(), in.nextInt(), in.nextInt());
+        }
+        int res = spfa();
+        if (res == -1) {
+            out.println("impossible");
+        }else {
+            out.println(res);
         }
         out.flush();
         out.close();
     }
-
+    private static int spfa() {
+        dist[1] = 0;
+        Queue<Pair> queue = new ArrayDeque<>();
+        queue.add(new Pair(1, 0));
+        while (!queue.isEmpty()) {
+            Pair p = queue.poll();
+            inQueue[p.position] = false;
+            List<Pair> list = graph.get(p.position);
+            for (Pair pp : list) {
+                if (dist[pp.position] > dist[p.position] + pp.weight) {
+                    dist[pp.position] = dist[p.position] + pp.weight;
+                    queue.add(pp);
+                    inQueue[pp.position] = true;
+                }
+            }
+        }
+        if (dist[n] >= Integer.MAX_VALUE / 4) return -1;
+        return dist[n];
+    }
     private static class MyWriter {
 
         private PrintWriter out;
