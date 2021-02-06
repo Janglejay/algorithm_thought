@@ -1,52 +1,37 @@
+package prime;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class Linear {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
+    static int[] prime;
+    static int count;
+    static boolean[] isVis;
+    private static void primeSieve(int n) {
+        for (int i = 2; i <= n; i++) {
+            if (!isVis[i]) {
+                prime[count++] = i;
             }
-        }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
+            for (int j = 0; prime[j] <= n / i; j++) {
+                isVis[i * prime[j]] = true;
+                if (i % prime[j] == 0) {
+                    break;
+                }
+            }
         }
     }
     public static void main(String[] args) {
         int n = in.nextInt();
-        long res = 1L;
-        while (n-- > 0) {
-            sum(in.nextInt());
-        }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
-            }
-            res = res * t % mod;
-        }
-        out.println(res);
+        prime = new int[n + 1];
+        isVis = new boolean[n + 1];
+        primeSieve(n);
+        out.println(count);
         out.flush();
         out.close();
     }

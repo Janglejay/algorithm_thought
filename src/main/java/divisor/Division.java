@@ -1,55 +1,45 @@
+package divisor;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Main {
+public class Division {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
-            }
-        }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
-        }
-    }
+    static int[] divisor;
+    static int count;
     public static void main(String[] args) {
         int n = in.nextInt();
-        long res = 1L;
+        divisor = new int[800_0000];
         while (n-- > 0) {
-            sum(in.nextInt());
-        }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
+            count = 0;
+            approximate(in.nextInt());
+            Arrays.sort(divisor, 0, count);
+            for (int i = 0; i < count; i++) {
+                out.print(divisor[i] + " ");
             }
-            res = res * t % mod;
+            out.println();
         }
-        out.println(res);
         out.flush();
         out.close();
     }
+
+    private static void approximate(int x) {
+        for (int i = 1; i <= x / i; i++) {
+            if (x % i == 0) {
+                divisor[count++] = i;
+                if (i != x / i) {
+                    divisor[count++] = x / i;
+                }
+            }
+        }
+    }
+
     private static class MyWriter {
 
         private PrintWriter out;

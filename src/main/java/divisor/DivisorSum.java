@@ -1,3 +1,5 @@
+package divisor;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class DivisorSum {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;

@@ -1,4 +1,4 @@
-package search_graph_theory.staining_method;
+package search_graph_theory.maximum_matching;
 
 import java.io.BufferedReader;
 import java.io.IOException;

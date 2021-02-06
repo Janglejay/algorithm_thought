@@ -1,14 +1,15 @@
+package divisor;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class DivisorNumber {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
@@ -36,15 +37,9 @@ public class Main {
         while (n-- > 0) {
             sum(in.nextInt());
         }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
-            }
-            res = res * t % mod;
+        Collection<Integer> values = map.values();
+        for (Integer v : values) {
+            res = (res * (v + 1)) % mod;
         }
         out.println(res);
         out.flush();

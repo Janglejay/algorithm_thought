@@ -1,50 +1,46 @@
+package euler;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class Main {
+public class SieveMethod {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
+    static List<Integer> primes = new ArrayList<>();
+    static boolean[] st;
+    static int[] phi;
+    private static void euler(int x) {
+        phi[1] = 1;
+        for (int i = 2; i <= x; i++) {
+            if (!st[i]) {
+                primes.add(i);
+                phi[i] = i - 1;
             }
-        }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
+            for (int pj = 0; primes.get(pj) <= x / i; pj++) {
+                st[primes.get(pj) * i] = true;
+                if (i % primes.get(pj) == 0) {
+                    phi[primes.get(pj) * i] = phi[i] * primes.get(pj);
+                    break;
+                }else {
+                    phi[primes.get(pj) * i] = phi[i] * (primes.get(pj) - 1);
+                }
+            }
         }
     }
     public static void main(String[] args) {
         int n = in.nextInt();
-        long res = 1L;
-        while (n-- > 0) {
-            sum(in.nextInt());
-        }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
-            }
-            res = res * t % mod;
+        st = new boolean[n + 1];
+        phi = new int[n + 1];
+        euler(n);
+        long res = 0L;
+        for (int i = 1; i <= n; i++) {
+            res += phi[i];
         }
         out.println(res);
         out.flush();
