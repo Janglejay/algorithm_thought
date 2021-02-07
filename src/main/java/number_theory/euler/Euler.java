@@ -1,4 +1,4 @@
-package euler;
+package number_theory.euler;
 
 import java.io.BufferedReader;
 import java.io.IOException;

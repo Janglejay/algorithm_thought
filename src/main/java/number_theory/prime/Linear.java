@@ -1,4 +1,4 @@
-package prime;
+package number_theory.prime;
 
 import java.io.BufferedReader;
 import java.io.IOException;

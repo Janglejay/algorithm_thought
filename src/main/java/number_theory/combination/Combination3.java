@@ -1,4 +1,4 @@
-package combination;
+package number_theory.combination;
 
 import java.io.BufferedReader;
 import java.io.IOException;

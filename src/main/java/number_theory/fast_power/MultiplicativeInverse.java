@@ -1,4 +1,4 @@
-package fast_power;
+package number_theory.fast_power;
 
 import java.io.BufferedReader;
 import java.io.IOException;

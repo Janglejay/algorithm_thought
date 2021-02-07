@@ -1,4 +1,4 @@
-package gaussian_elimination;
+package number_theory.gaussian_elimination;
 
 import java.io.BufferedReader;
 import java.io.IOException;

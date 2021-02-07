@@ -1,4 +1,4 @@
-package exgcd;
+package number_theory.exgcd;
 
 import java.io.BufferedReader;
 import java.io.IOException;

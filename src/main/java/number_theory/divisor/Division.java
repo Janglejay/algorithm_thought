@@ -1,4 +1,4 @@
-package divisor;
+package number_theory.divisor;
 
 import java.io.BufferedReader;
 import java.io.IOException;

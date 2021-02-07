@@ -1,4 +1,4 @@
-package chinese_remainder_theorem;
+package number_theory.chinese_remainder_theorem;
 
 import java.io.BufferedReader;
 import java.io.IOException;

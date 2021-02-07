@@ -1,4 +1,4 @@
-package game_theory;
+package number_theory.game_theory;
 
 import java.io.BufferedReader;
 import java.io.IOException;

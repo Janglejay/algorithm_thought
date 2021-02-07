@@ -1,4 +1,4 @@
-package inclusion_exclusion_principle;
+package number_theory.inclusion_exclusion_principle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
