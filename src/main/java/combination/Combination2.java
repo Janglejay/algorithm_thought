@@ -1,59 +1,63 @@
+package combination;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
-    static final MyScanner in = new MyScanner();
-    static final MyWriter myOut = new MyWriter();
-    static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
+public class Combination2 {
+    private static class Combination {
+        private long[] fact;
+        private long[] inFact;
+        private final int n;
+        private final int MOD = (int) (1e9 + 7);
+        private int fastPower(long a, long b, long q) {
+            long res = 1L;
+            while (b > 0) {
+                if ((b & 1) == 1) {
+                    res = res * a % q;
                 }
-                map.put(i, map.getOrDefault(i, 0) + s);
+                b >>= 1;
+                a = a * a % q;
+            }
+            return (int) res;
+        }
+
+        public Combination(int n) {
+            this.n = n;
+            init();
+        }
+        private void init() {
+            fact = new long[n];
+            inFact = new long[n];
+            fact[0] = inFact[0] = 1;
+            for (int i = 1; i < n; i++) {
+                fact[i] = fact[i - 1] * i % MOD;
+                inFact[i] = inFact[i - 1] * fastPower(i, MOD - 2, MOD) % MOD;
             }
         }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
+        public int com(int a, int b) {
+            return (int)(fact[a] * inFact[b] % MOD * inFact[a - b] % MOD);
         }
     }
+
     public static void main(String[] args) {
-        System.out.println(-5 % 3);
         int n = in.nextInt();
-        long res = 1L;
+        Combination c = new Combination((int) (1e5 + 10));
         while (n-- > 0) {
-            sum(in.nextInt());
+            out.println(c.com(in.nextInt(), in.nextInt()));
         }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
-            }
-            res = res * t % mod;
-        }
-        out.println(res);
         out.flush();
         out.close();
     }
+    static final MyScanner in = new MyScanner();
+    static final MyWriter myOut = new MyWriter();
+    static final PrintWriter out = myOut.out;
+
     private static class MyWriter {
 
-        private PrintWriter out;
+        private final PrintWriter out;
 
         private MyWriter() {
             out = new PrintWriter(System.out);
@@ -86,7 +90,7 @@ public class Main {
     }
 
     private static class MyScanner {
-        private BufferedReader br;
+        private final BufferedReader br;
         private StringTokenizer st;
 
         private MyScanner() {

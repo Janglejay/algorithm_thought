@@ -1,59 +1,69 @@
+package combination;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class Combination3 {
+    private static class Combination {
+        private int mod;
+
+        public void setMod(int mod) {
+            this.mod = mod;
+        }
+        public Combination() {
+
+        }
+        private int fastPower(long a, long b, long q) {
+            long res = 1L;
+            while (b > 0) {
+                if ((b & 1) == 1) {
+                    res = res * a % q;
+                }
+                b >>= 1;
+                a = a * a % q;
+            }
+            return (int) res;
+        }
+        private long com(int a, int b) {
+            long res = 1L;
+            for (int i = 1, j = a; i <= b; i++, j--) {
+                res = res * j % mod;
+                res = res * fastPower(i, mod - 2, mod) % mod;
+            }
+            return (int) res;
+        }
+        public int lucas(long a, long b) {
+            if (a < mod && b < mod) {
+                return (int) com((int)a, (int)b);
+            }
+            return (int) (com((int)(a % mod), (int)(b % mod)) * lucas(a / mod, b / mod) % mod);
+        }
+    }
+
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
-            }
-        }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
-        }
-    }
+
     public static void main(String[] args) {
-        System.out.println(-5 % 3);
         int n = in.nextInt();
-        long res = 1L;
+        Combination c = new Combination();
         while (n-- > 0) {
-            sum(in.nextInt());
+            long a = in.nextLong();
+            long b = in.nextLong();
+            int p = in.nextInt();
+            c.setMod(p);
+            int res = c.lucas(a, b);
+            out.println(res);
         }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
-            }
-            res = res * t % mod;
-        }
-        out.println(res);
         out.flush();
         out.close();
     }
     private static class MyWriter {
 
-        private PrintWriter out;
+        private final PrintWriter out;
 
         private MyWriter() {
             out = new PrintWriter(System.out);
@@ -86,7 +96,7 @@ public class Main {
     }
 
     private static class MyScanner {
-        private BufferedReader br;
+        private final BufferedReader br;
         private StringTokenizer st;
 
         private MyScanner() {

@@ -1,59 +1,95 @@
+package gaussian_elimination;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class ExclusiveORLinearSystems {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
-            }
+
+    private static class Gauss {
+        private final int[][] det;
+
+        public Gauss(int[][] det) {
+            this.det = det;
         }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
+        public int gauss() {
+            int c,r;
+            int n = det.length;
+            for (c = 0, r = 0; c < n; c++) {
+                int t = r;
+                for (int i = r; i < n; i++) {
+                    if (det[i][c] > 0) {
+                        t = i;
+                        break;
+                    }
+                }
+                if (det[t][c] == 0) continue;
+                for (int i = c; i <= n; i++) {
+                    int temp = det[t][i];
+                    det[t][i] = det[r][i];
+                    det[r][i] = temp;
+                }
+                for (int i = r + 1; i < n; i++) {
+                    if (det[i][c] != 0) {
+                        for (int j = n; j >= c; j--) {
+                            det[i][j] ^= det[r][j];
+                        }
+                    }
+                }
+                r++;
+            }
+            if (r < n) {
+                for (int i = r; i < n; i++) {
+                    //出现 0 = 非0
+                    if (det[i][n] != 0) {
+                        //无解
+                        return 2;
+                    }
+                }
+                //无穷多组解
+                return 1;
+            }
+            //倒着把解求出来
+            for (int i = n - 1; i >= 0; i--) {
+                for (int j = i + 1; j < n; j++) {
+                    det[i][n] ^= det[i][j] & det[j][n];
+                }
+            }
+            //唯一解
+            return 0;
         }
     }
+
     public static void main(String[] args) {
-        System.out.println(-5 % 3);
         int n = in.nextInt();
-        long res = 1L;
-        while (n-- > 0) {
-            sum(in.nextInt());
-        }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
+        int[][] a = new int[n][n + 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n + 1; j++) {
+                a[i][j] = in.nextInt();
             }
-            res = res * t % mod;
         }
-        out.println(res);
+        Gauss gauss = new Gauss(a);
+        int res = gauss.gauss();
+        if (res == 0) {
+            for (int i = 0; i < n; i++) {
+                out.println(a[i][n]);
+            }
+        } else if (res == 1) {
+            out.println("Multiple sets of solutions");
+        } else if (res == 2) {
+            out.println("No solution");
+        }
         out.flush();
         out.close();
     }
     private static class MyWriter {
 
-        private PrintWriter out;
+        private final PrintWriter out;
 
         private MyWriter() {
             out = new PrintWriter(System.out);
@@ -86,7 +122,7 @@ public class Main {
     }
 
     private static class MyScanner {
-        private BufferedReader br;
+        private final BufferedReader br;
         private StringTokenizer st;
 
         private MyScanner() {

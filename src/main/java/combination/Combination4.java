@@ -1,59 +1,72 @@
+package combination;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class Combination4 {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
-            }
-        }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
-        }
-    }
+
     public static void main(String[] args) {
-        System.out.println(-5 % 3);
-        int n = in.nextInt();
-        long res = 1L;
-        while (n-- > 0) {
-            sum(in.nextInt());
-        }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
-            }
-            res = res * t % mod;
-        }
+        Combination c = new Combination();
+        String res = c.com(in.nextInt(), in.nextInt());
         out.println(res);
         out.flush();
         out.close();
     }
+    private static class Combination{
+        private int[] primes;
+        private int[] sum;
+        private int count;
+        private boolean[] st;
+
+        private String com(int a, int b) {
+            initPrimes(a);
+            initSum(a, b);
+            BigInteger res = new BigInteger("1");
+            for (int i = 0; i < count; i++) {
+                for (int j = 0; j < sum[i]; j++) {
+                    res = res.multiply(BigInteger.valueOf(primes[i]));
+                }
+            }
+            return res.toString();
+        }
+        private void initPrimes(int n){
+            primes = new int[n + 1];
+            st = new boolean[n + 1];
+            for (int i = 2; i <= n; i++) {
+                if (!st[i]) primes[count++] = i;
+                for (int j = 0; primes[j] <= n / i; j++) {
+                    st[primes[j] * i] = true;
+                    if (i % primes[j] == 0) break;
+                }
+            }
+        }
+        private void initSum(int a, int b) {
+            sum = new int[count];
+            for (int i = 0; i < count; i++) {
+                int p = primes[i];
+                sum[i] = getNumber(a, p) - getNumber(b, p) - getNumber(a - b, p);
+            }
+        }
+        //得到n中质因子p的个数
+        private int getNumber(int n, int p) {
+            int res = 0;
+            while (n > 0) {
+                res += n / p;
+                n /= p;
+            }
+            return res;
+        }
+    }
     private static class MyWriter {
 
-        private PrintWriter out;
+        private final PrintWriter out;
 
         private MyWriter() {
             out = new PrintWriter(System.out);
@@ -86,7 +99,7 @@ public class Main {
     }
 
     private static class MyScanner {
-        private BufferedReader br;
+        private final BufferedReader br;
         private StringTokenizer st;
 
         private MyScanner() {

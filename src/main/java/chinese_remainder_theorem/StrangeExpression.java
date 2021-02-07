@@ -1,56 +1,59 @@
+package chinese_remainder_theorem;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class StrangeExpression {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
-            }
+    static long x;
+    static long y;
+
+    public static long exgcd(long a, long b) {
+        if (b == 0) {
+            x = 1;
+            y = 0;
+            return a;
         }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
-        }
+        long d = exgcd(b, a % b);
+        long tmp = x;
+        x = y;
+        y = tmp - a / b * y;
+        return d;
     }
+
     public static void main(String[] args) {
-        System.out.println(-5 % 3);
         int n = in.nextInt();
-        long res = 1L;
-        while (n-- > 0) {
-            sum(in.nextInt());
-        }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
+        boolean hasAnswer = true;
+        long a1 = in.nextLong();
+        long m1 = in.nextLong();
+        for (int i = 1; i < n; i++) {
+            long a2 = in.nextLong();
+            long m2 = in.nextLong();
+            long d = exgcd(a1, a2);
+            if ((m2 - m1) % d != 0) {
+                hasAnswer = false;
+                break;
             }
-            res = res * t % mod;
+            x *= (m2 - m1) / d;
+            long t = a2 / d;
+            x = (x % t + t) % t;
+            m1 = a1 * x + m1;
+            a1 = Math.abs(a1 * a2 / d);
         }
-        out.println(res);
+        if (hasAnswer) {
+            out.println((m1 % a1 + a1) % a1);
+        }else {
+            out.println("-1");
+        }
         out.flush();
         out.close();
     }
+
     private static class MyWriter {
 
         private PrintWriter out;

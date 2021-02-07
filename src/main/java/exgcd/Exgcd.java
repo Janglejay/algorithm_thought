@@ -1,53 +1,37 @@
+package exgcd;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class Main {
+public class Exgcd {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static int mod = (int) (1e9 + 7);
-    static Map<Integer, Integer> map = new HashMap<>();
-    public static void sum(int x) {
-        //先进行质因数 分解
-        for (int i = 2; i <= x / i; i++) {
-            if (x % i == 0) {
-                int s = 0;
-                while (x % i == 0) {
-                    s++;
-                    x /= i;
-                }
-                map.put(i, map.getOrDefault(i, 0) + s);
-            }
+    static long x;
+    static long y;
+    public static long exgcd(long a, long b) {
+        if (b == 0) {
+            x = 1;
+            y = 0;
+            return a;
         }
-        if (x > 1) {
-            map.put(x, map.getOrDefault(x, 0) + 1);
-        }
+        long d = exgcd(b, a % b);
+        long tmp = x;
+        x = y;
+        y = tmp - a / b * y;
+        return d;
     }
     public static void main(String[] args) {
-        System.out.println(-5 % 3);
         int n = in.nextInt();
-        long res = 1L;
         while (n-- > 0) {
-            sum(in.nextInt());
+            int a = in.nextInt();
+            int b = in.nextInt();
+            long d = exgcd(a, b);
+            out.println(x + " " + y);
         }
-        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
-        for (Map.Entry<Integer, Integer> e : entries) {
-            int p = e.getKey();
-            int mul = e.getValue();
-            long t = 0L;
-            for (int i = 0; i <= mul; i++) {
-                t = (t * p + 1) % mod;
-            }
-            res = res * t % mod;
-        }
-        out.println(res);
         out.flush();
         out.close();
     }
