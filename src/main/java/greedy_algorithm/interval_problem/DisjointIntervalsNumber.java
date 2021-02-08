@@ -1,43 +1,40 @@
+package greedy_algorithm.interval_problem;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 
-public class Main {
-    public static void main(String[] args) {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        String str = in.nextLine();
-        int P = 131;
-        long[] h = new long[n + 10];
-        long[] p = new long[n + 10];
-        p[0] = 1;
-        for(int i = 1; i <= n; i++){
-            p[i] = p[i - 1] * P;
-            h[i] = h[i - 1] * P + str.charAt(i - 1);
-        }
-        while (m-- > 0) {
-            int l1 = in.nextInt();
-            int r1 = in.nextInt();
-            int l2 = in.nextInt();
-            int r2 = in.nextInt();
-            String res = h[r1] - h[l1 - 1] * p[r1 - l1 + 1] == h[r2] - h[l2 - 1] * p[r2 - l2 + 1] ?
-                    "Yes" : "No";
-            out.println(res);
-        }
-        out.flush();
-        out.close();
-    }
-
+public class DisjointIntervalsNumber {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
 
+    public static void main(String[] args) {
+        int n = in.nextInt();
+        int[][] intervals = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            intervals[i][0] = in.nextInt();
+            intervals[i][1] = in.nextInt();
+        }
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[1]));
+        int r = intervals[0][1];
+        int res = 1;
+        for (int i = 1; i < n; i++) {
+            if (r < intervals[i][0]) {
+                res++;
+                r = intervals[i][1];
+            }else {
+                r = Math.min(r, intervals[i][1]);
+            }
+        }
+        out.println(res);
+        out.flush();
+        out.close();
+    }
     private static class MyWriter {
 
         private final PrintWriter out;

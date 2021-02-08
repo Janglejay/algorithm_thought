@@ -1,42 +1,54 @@
+package greedy_algorithm.interval_problem;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 
-public class Main {
+public class IntervalCoverage {
+    static final MyScanner in = new MyScanner();
+    static final MyWriter myOut = new MyWriter();
+    static final PrintWriter out = myOut.out;
+
     public static void main(String[] args) {
+        int[] target = new int[2];
+        target[0] = in.nextInt();
+        target[1] = in.nextInt();
         int n = in.nextInt();
-        int m = in.nextInt();
-        String str = in.nextLine();
-        int P = 131;
-        long[] h = new long[n + 10];
-        long[] p = new long[n + 10];
-        p[0] = 1;
-        for(int i = 1; i <= n; i++){
-            p[i] = p[i - 1] * P;
-            h[i] = h[i - 1] * P + str.charAt(i - 1);
+        int[][] intervals = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            intervals[i][0] = in.nextInt();
+            intervals[i][1] = in.nextInt();
         }
-        while (m-- > 0) {
-            int l1 = in.nextInt();
-            int r1 = in.nextInt();
-            int l2 = in.nextInt();
-            int r2 = in.nextInt();
-            String res = h[r1] - h[l1 - 1] * p[r1 - l1 + 1] == h[r2] - h[l2 - 1] * p[r2 - l2 + 1] ?
-                    "Yes" : "No";
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[0]));
+        int r = target[0];
+        int res = 0;
+        for (int i = 0; i < n; ) {
+            int idx = -1;
+            while (i < n && intervals[i][0] <= r) {
+                if (idx == -1 || intervals[idx][1] < intervals[i][1]) {
+                    idx = i;
+                }
+                i++;
+            }
+            if (idx == -1) {
+                break;
+            }
+            res++;
+            r = intervals[idx][1];
+            if (r >= target[1]) break;
+        }
+        if (res == 0 || r < target[1]) {
+            out.println(-1);
+        }else {
             out.println(res);
         }
         out.flush();
         out.close();
     }
-
-    static final MyScanner in = new MyScanner();
-    static final MyWriter myOut = new MyWriter();
-    static final PrintWriter out = myOut.out;
 
     private static class MyWriter {
 
@@ -125,4 +137,5 @@ public class Main {
             }
         }
     }
+
 }
