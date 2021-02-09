@@ -1,3 +1,9 @@
+---
+layout: post
+title: Prim
+tag: 搜索与图论
+---
+
 # Prim
 
 适用于无向稠密图，可以存在负边

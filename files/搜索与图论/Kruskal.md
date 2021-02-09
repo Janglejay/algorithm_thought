@@ -1,3 +1,9 @@
+---
+layout: post
+title: Kruskal
+tag: 搜索与图论
+---
+
 # Kruskal
 
 适用于稀疏图

@@ -1,4 +1,10 @@
-# Bellman-ford
+---
+layout: post
+title: Bellman-Ford
+tag: 搜索与图论
+---
+
+# Bellman-Ford
 
 1. 存储所有的边
 2. 如果有`负权回路`则答案可能是负无穷

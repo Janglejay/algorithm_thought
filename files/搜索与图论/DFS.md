@@ -1,3 +1,9 @@
+---
+layout: post
+title: DFS
+tag: 搜索与图论
+---
+
 # DFS
 
 ## AcWing 842. 排列数字   [原题链接](https://www.acwing.com/problem/content/844/)
@@ -68,7 +74,7 @@
 
 n-皇后问题是指将 n 个皇后放在 n∗n 的国际象棋棋盘上，使得皇后不能相互攻击到，即任意两个皇后都不能处于同一行、同一列或同一斜线上。
 
-![1_597ec77c49-8-queens.png](images/19_860e00c489-1_597ec77c49-8-queens.png)
+[![ywpV0I.png](https://s3.ax1x.com/2021/02/10/ywpV0I.png)](https://imgchr.com/i/ywpV0I)
 
 现在给定整数n，请你输出所有的满足条件的棋子摆法。
 

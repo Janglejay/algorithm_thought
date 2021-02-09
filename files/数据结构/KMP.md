@@ -1,3 +1,9 @@
+---
+layout: post
+title: KMP
+tag: 数据结构
+---
+
 ## AcWing 831. KMP字符串   [原题链接](https://www.acwing.com/problem/content/833/)
 
 给定一个模式串S，以及一个模板串P，所有字符串中只包含大小写英文字母以及阿拉伯数字。

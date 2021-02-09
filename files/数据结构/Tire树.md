@@ -1,3 +1,9 @@
+---
+layout: post
+title: Trie树
+tag: 数据结构
+---
+
 # Trie树
 
 用来快速存储 和 查找 字符串集合 的数据结构
@@ -15,9 +21,7 @@ insert \ find 方法
 insert 一个字符串
 ```
 
-
-
-![image-20201222152130202](images/image-20201222152130202.png)
+[![ywpuh8.png](https://s3.ax1x.com/2021/02/10/ywpuh8.png)](https://imgchr.com/i/ywpuh8)
 
 ## 如何查找？
 

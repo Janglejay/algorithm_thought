@@ -1,3 +1,9 @@
+---
+layout: post
+title: Huffman树
+tag: 贪心算法
+---
+
 # Huffman树
 
 是完全二叉树

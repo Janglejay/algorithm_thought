@@ -1,3 +1,9 @@
+---
+layout: post
+title: Dijkstra
+tag: 搜索与图论
+---
+
 # Dijkstra
 
 # 朴素版Dijkstra
@@ -15,6 +21,22 @@
 `st[]`:表示第`i`个点已经确定了最短路，及要以这个点为基准来更新其他路径，而这个点的最短路已经确定。
 
 `dist[]`:表示第`i`个点到起点的最短路
+
+# 堆优化版Dijkstra
+
+适用于稀疏图，利用`邻接表`来存储图
+
+1. 使用`heap`来维护最小的路径
+
+## 关键数据结构
+
+`heap`:用来维护最小的路径
+
+`st[]`:表示这个点已经确定了最短路径
+
+`dist[]`：表示这个点到起点的最短路径
+
+`Pair`：表示某个点，利用这个点的`weight`进行排序，利用这个点的`position`访问原位置
 
 ## AcWing 849. Dijkstra求最短路 I   [原题链接](https://www.acwing.com/problem/content/851/)
 
@@ -101,22 +123,6 @@
         return dist[n];
     }
 ```
-
-# 堆优化版Dijkstra
-
-适用于稀疏图，利用`邻接表`来存储图
-
-1. 使用`heap`来维护最小的路径
-
-## 关键数据结构
-
-`heap`:用来维护最小的路径
-
-`st[]`:表示这个点已经确定了最短路径
-
-`dist[]`：表示这个点到起点的最短路径
-
-`Pair`：表示某个点，利用这个点的`weight`进行排序，利用这个点的`position`访问原位置
 
 ## AcWing 850. Dijkstra求最短路 II   [原题链接](https://www.acwing.com/problem/content/852/)
 

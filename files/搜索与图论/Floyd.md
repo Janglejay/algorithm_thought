@@ -1,3 +1,9 @@
+---
+layout: post
+title: Floyd
+tag: 搜索与图论
+---
+
 # Floyd
 
 用来求多源汇最短路问题
