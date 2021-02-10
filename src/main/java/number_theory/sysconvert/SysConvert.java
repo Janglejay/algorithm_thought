@@ -1,29 +1,49 @@
+package number_theory.sysconvert;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Main {
-    public static void main(String[] ars) {
-        int n = in.nextInt();
-        int[] arr = new int[n];
-        in.nextIntegerArray(arr);
-        Arrays.sort(arr);
-        int sum = 0;
-        for (int i = 0; i < n / 2; i++) sum -= arr[i];
-        for (int i = n / 2; i < n; i++) sum += arr[i];
-
-        out.println((n & 1) + " " + sum);
-        out.flush();
-        out.close();
-    }
-
+public class SysConvert {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
+    private static char get(int x) {
+        if (x <= 9) return (char) (x + '0');
+        return (char) (x - 10 + 'A');
+    }
+    public static String base(int n, int b) {
+        String num = "";
+        while (n > 0) {
+            num += get(n % b);
+            n /= b;
+        }
+        num = new StringBuilder(num).reverse().toString();
+        return num;
+    }
+    private static boolean check(String num) {
+        int l = 0;
+        int r = num.length() - 1;
+        while (l < r) {
+            if (num.charAt(l) != num.charAt(r)) return false;
+            l++;
+            r--;
+        }
+        return true;
+    }
+    public static void main(String[] args) {
+        int n = in.nextInt();
+        for (int i = 1; i <= 300; i++) {
+            String s = base(i * i, n);
+            if (check(s)) {
+                out.println(base(i, n) + " " + s);
+            }
+        }
+        out.flush();
+        out.close();
+    }
     private static class MyWriter {
 
         private final PrintWriter out;

@@ -1,29 +1,34 @@
+package number_theory.sysconvert;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class Main {
-    public static void main(String[] ars) {
-        int n = in.nextInt();
-        int[] arr = new int[n];
-        in.nextIntegerArray(arr);
-        Arrays.sort(arr);
-        int sum = 0;
-        for (int i = 0; i < n / 2; i++) sum -= arr[i];
-        for (int i = n / 2; i < n; i++) sum += arr[i];
-
-        out.println((n & 1) + " " + sum);
-        out.flush();
-        out.close();
-    }
-
+public class Convert10 {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
+    private static int uget(char c) {
+        if (c <= '9') return c - '0';
+        return c - 'A' + 10;
+    }
+    private static int base10(String num, int b) {
+        int res = 0;
+        for (char c : num.toCharArray()) {
+            res = res * b + uget(c);
+        }
+        return res;
+    }
+    public static void main(String[] args) {
+        for (int i = 1; i <= 300; i++) {
+            String base = SysConvert.base(i, 7);
+            out.println(i + " " + base10(base, 7));
+        }
+        out.flush();
+        out.close();
+    }
     private static class MyWriter {
 
         private final PrintWriter out;
