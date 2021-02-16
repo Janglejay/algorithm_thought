@@ -1,0 +1,141 @@
+package dynamic_programming.states_compressing_dp;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
+
+public class MondrianDream {
+    static final MyScanner in = new MyScanner();
+    static final MyWriter myOut = new MyWriter();
+    static final PrintWriter out = myOut.out;
+
+    public static void main(String[] args) {
+        int n;
+        int m;
+        long[][] dp;
+        boolean[] st;
+        while ((n = in.nextInt()) != 0 && (m = in.nextInt()) != 0) {
+            dp = new long[m + 1][1 << n];
+            st = new boolean[1 << n];
+            for (int i = 0; i < (1 << n); i++) {
+                int count = 0;
+                boolean isValid = true;
+                for (int j = 0; j < n; j++) {
+                    if (((i >> j) & 1) == 1) {
+                        if ((count & 1) == 1) {
+                            isValid = false;
+                            break;
+                        }
+                        count = 0;
+                    }else {
+                        count++;
+                    }
+                }
+                if ((count & 1) == 1) isValid = false;
+                st[i] = isValid;
+            }
+            dp[0][0] = 1;
+            for (int i = 1; i <= m; i++) {
+                for (int j = 0; j < (1 << n); j++) {
+                    for (int k = 0; k < (1 << n); k++) {
+                        if ((j & k) == 0 && st[j | k]) {
+                            dp[i][j] += dp[i - 1][k];
+                        }
+                    }
+                }
+            }
+            out.println(dp[m][0]);
+        }
+        out.flush();
+        out.close();
+    }
+    private static class MyWriter {
+
+        private final PrintWriter out;
+
+        private MyWriter() {
+            out = new PrintWriter(System.out);
+        }
+
+        private void printlnArray(int[] arr, int start, int end) {
+            for (int i = start; i < end; i++) {
+                out.println(arr[i]);
+            }
+        }
+
+        private void printArrayJoinSpace(int[] arr, int start, int end) {
+            for (int i = start; i < end; i++) {
+                out.println(arr[i] + " ");
+            }
+        }
+
+        private void printlnArray(int[] arr) {
+            for (int x : arr) {
+                out.println(x);
+            }
+        }
+
+        private void printArrayJoinSpace(int[] arr) {
+            for (int i : arr) {
+                out.print(i + " ");
+            }
+        }
+
+    }
+
+    private static class MyScanner {
+        private final BufferedReader br;
+        private StringTokenizer st;
+
+        private MyScanner() {
+            br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        private String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        private int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        private long nextLong() {
+            return Long.parseLong(next());
+        }
+
+        private double nextDouble() {
+            return Double.parseDouble(next());
+        }
+
+        private String nextLine() {
+            String str = "";
+            try {
+                str = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return str;
+        }
+
+        private void nextIntegerArray(int[] arr, int start, int end) {
+            for (int i = start; i < end; i++) {
+                arr[i] = nextInt();
+            }
+        }
+
+        private void nextIntegerArray(int[] arr) {
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = nextInt();
+            }
+        }
+    }
+}
