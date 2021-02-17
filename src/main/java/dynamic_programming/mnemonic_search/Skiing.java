@@ -1,87 +1,54 @@
-package dynamic_programming.knapsack_problem;
+package dynamic_programming.mnemonic_search;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public class PacketBackpack {
+public class Skiing {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-
-    private static class Packet {
-        int weight;
-        int value;
-
-        public Packet(int weight, int value) {
-            this.weight = weight;
-            this.value = value;
+    private static int[][] dp;
+    private static int[][] map;
+    private static int n;
+    private static int m;
+    private static int[] dx = new int[]{-1, 0, 1, 0};
+    private static int[] dy = new int[]{0, 1, 0, -1};
+    private static int mnemonicSearch(int x, int y) {
+        // 状态已经被算过了
+        if (dp[x][y] != -1) {
+            return dp[x][y];
         }
+        dp[x][y] = 1;
+        for (int i = 0; i < 4; i++) {
+            int bx = x + dx[i];
+            int by = y + dy[i];
+            if (bx < 0 || by < 0 || bx >= n || by >= m || map[bx][by] >= map[x][y]) continue;
+            dp[x][y] = Math.max(dp[x][y], mnemonicSearch(bx, by) + 1);
+        }
+        return dp[x][y];
     }
-
-    private static int function1() {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        Packet[][] a = new Packet[n][];
-        int[] size = new int[n];
-        for (int i = 0; i < n; i++) {
-            int s = in.nextInt();
-            size[i] = s;
-            a[i] = new Packet[s];
-            for (int j = 0; j < s; j++) {
-                a[i][j] = new Packet(in.nextInt(), in.nextInt());
-            }
-        }
-        int[][] dp = new int[n + 1][m + 1];
-        for (int i = 1; i < n + 1; i++) {
-            for (int j = 0; j < m + 1; j++) {
-                // 这一组可以一种也不选
-                dp[i][j] = dp[i - 1][j];
-                for (int k = 0; k < size[i - 1]; k++) {
-                    if (j >= a[i - 1][k].weight)
-                        dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - a[i - 1][k].weight] + a[i - 1][k].value);
-                }
-            }
-        }
-        return dp[n][m];
-    }
-
-    private static int function2() {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        Packet[][] a = new Packet[n][];
-        int[] size = new int[n];
-        for (int i = 0; i < n; i++) {
-            int s = in.nextInt();
-            size[i] = s;
-            a[i] = new Packet[s];
-            for (int j = 0; j < s; j++) {
-                a[i][j] = new Packet(in.nextInt(), in.nextInt());
-            }
-        }
-        int[] dp = new int[m + 1];
-        for (int i = 1; i < n + 1; i++) {
-            for (int j = m; j >= 0; j--) {
-                for (int k = 0; k < size[i - 1]; k++) {
-                    if (j >= a[i - 1][k].weight)
-                        dp[j] = Math.max(dp[j], dp[j - a[i - 1][k].weight] + a[i - 1][k].value);
-                }
-            }
-        }
-        return dp[m];
-    }
-
-
     public static void main(String[] args) {
-//        int res = function1();
-        int res = function2();
+        n = in.nextInt();
+        m = in.nextInt();
+        map = new int[n][m];
+        dp = new int[n + 1][m + 1];
+        for (int i = 0; i < n; i++) in.nextIntegerArray(map[i]);
+        // 初始化所有状态，表示所有状态都没被更新过
+        for (int i = 0; i < n + 1; i++) Arrays.fill(dp[i], -1);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                res = Math.max(res, mnemonicSearch(i, j));
+            }
+        }
         out.println(res);
         out.flush();
         out.close();
     }
-
     private static class MyWriter {
 
         private final PrintWriter out;

@@ -1,83 +1,53 @@
-package dynamic_programming.knapsack_problem;
+package dynamic_programming.tree_dp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class PacketBackpack {
+public class PartyWithoutBoss {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
 
-    private static class Packet {
-        int weight;
-        int value;
-
-        public Packet(int weight, int value) {
-            this.weight = weight;
-            this.value = value;
+    private static List<List<Integer>> graph = new ArrayList<>();
+    private static int[][] dp;
+    private static int[] happy;
+    private static boolean[] hasParent;
+    private static void add(int a, int b) {
+        graph.get(a).add(b);
+    }
+    private static void dfs(int u) {
+        dp[u][1] = happy[u];
+        for (Integer i : graph.get(u)) {
+            // 到叶子节点就自动停止递归了
+            dfs(i);
+            dp[u][0] += Math.max(dp[i][0], dp[i][1]);
+            dp[u][1] += dp[i][0];
         }
     }
-
-    private static int function1() {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        Packet[][] a = new Packet[n][];
-        int[] size = new int[n];
-        for (int i = 0; i < n; i++) {
-            int s = in.nextInt();
-            size[i] = s;
-            a[i] = new Packet[s];
-            for (int j = 0; j < s; j++) {
-                a[i][j] = new Packet(in.nextInt(), in.nextInt());
-            }
-        }
-        int[][] dp = new int[n + 1][m + 1];
-        for (int i = 1; i < n + 1; i++) {
-            for (int j = 0; j < m + 1; j++) {
-                // 这一组可以一种也不选
-                dp[i][j] = dp[i - 1][j];
-                for (int k = 0; k < size[i - 1]; k++) {
-                    if (j >= a[i - 1][k].weight)
-                        dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - a[i - 1][k].weight] + a[i - 1][k].value);
-                }
-            }
-        }
-        return dp[n][m];
-    }
-
-    private static int function2() {
-        int n = in.nextInt();
-        int m = in.nextInt();
-        Packet[][] a = new Packet[n][];
-        int[] size = new int[n];
-        for (int i = 0; i < n; i++) {
-            int s = in.nextInt();
-            size[i] = s;
-            a[i] = new Packet[s];
-            for (int j = 0; j < s; j++) {
-                a[i][j] = new Packet(in.nextInt(), in.nextInt());
-            }
-        }
-        int[] dp = new int[m + 1];
-        for (int i = 1; i < n + 1; i++) {
-            for (int j = m; j >= 0; j--) {
-                for (int k = 0; k < size[i - 1]; k++) {
-                    if (j >= a[i - 1][k].weight)
-                        dp[j] = Math.max(dp[j], dp[j - a[i - 1][k].weight] + a[i - 1][k].value);
-                }
-            }
-        }
-        return dp[m];
-    }
-
-
     public static void main(String[] args) {
-//        int res = function1();
-        int res = function2();
-        out.println(res);
+        int n = in.nextInt();
+        happy = new int[n + 1];
+        hasParent = new boolean[n + 1];
+        dp = new int[n + 1][n + 1];
+        for (int i = 0; i < n + 1; i++) graph.add(new ArrayList<>());
+        for (int i = 1; i <= n; i++) happy[i] = in.nextInt();
+        for (int i = 0; i < n - 1; i++) {
+            int a = in.nextInt();
+            int b = in.nextInt();
+            hasParent[a] = true;
+            // b是a的直接上司
+            add(b, a);
+        }
+        int root = 1;
+        // 找到根节点，即没有父节点的点
+        while (hasParent[root]) root++;
+        dfs(root);
+        out.println(Math.max(dp[root][0], dp[root][1]));
         out.flush();
         out.close();
     }
