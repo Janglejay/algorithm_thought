@@ -1,4 +1,4 @@
-package basic_algorithm.prefixSum_difference;
+package basic_algorithm.prefixes_difference;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,37 +7,36 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.StringTokenizer;
 
-public class PrefixSumMatrix {
+public class Difference {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
 
     public static void main(String[] args) {
         int n = in.nextInt();
-        int m = in.nextInt();
         int q = in.nextInt();
-        int[][] arr = new int[n][m];
-        int[][] matrix = new int[n + 1][m + 1];
-        for (int i = 0; i < n; i++) {
-            in.nextIntegerArray(arr[i]);
-        }
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
-                matrix[i][j] = matrix[i - 1][j] + matrix[i][j - 1] - matrix[i - 1][j - 1] + arr[i - 1][j - 1];
-            }
+        int[] arr = new int[n];
+        in.nextIntegerArray(arr);
+        int[] difference = new int[n + 2];
+        difference[1] = arr[0];
+        for (int i = 1; i < n; i++) {
+            difference[i + 1] = arr[i] - arr[i - 1];
         }
         while (q-- > 0) {
-            int lr = in.nextInt();
-            int lc = in.nextInt();
-            int rr = in.nextInt();
-            int rc = in.nextInt();
-            int sum = matrix[rr][rc] - matrix[lr - 1][rc] - matrix[rr][lc - 1] + matrix[lr - 1][lc - 1];
-            out.println(sum);
+            int l = in.nextInt();
+            int r = in.nextInt();
+            int add = in.nextInt();
+            difference[l] += add;
+            difference[r + 1] -= add;
         }
+        arr[0] = difference[1];
+        for (int i = 1; i < n; i++) {
+            arr[i] = arr[i - 1] + difference[i + 1];
+        }
+        myOut.printArrayJoinSpace(arr);
         out.flush();
         out.close();
     }
-
     private static class MyWriter {
 
         private PrintWriter out;
@@ -125,7 +124,6 @@ public class PrefixSumMatrix {
             }
         }
     }
-
     private static class MyOptions {
         private static double doubleAdd(double x, double y) {
             BigDecimal bigDecimal = new BigDecimal(x);

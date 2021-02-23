@@ -1,35 +1,20 @@
+import java.util.Arrays;
+
 class Solution {
-    public int minSwapsCouples(int[] row) {
-        int n = row.length;
-        int[] arr = new int[n >> 1];
-        for (int i = 0; i < arr.length; i++) {
-            int first = row[(i << 1)];
-            int second = row[(i << 1) + 1];
-            if (((first & 1) == 0 && first == second - 1) || ((first & 1) == 1 && first == second + 1)) {
-                arr[i] = 1;
+    public int longestPalindrome(String a, String b) {
+        int n = a.length();
+        int m = b.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i < n + 1; i++) {
+            for (int j = 1; j < m + 1; j++) {
+                if (i == 1 || a.charAt(n - i + 1) == b.charAt(j - 1))
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j] + 1);
+                if (j == 1 || a.charAt(n - i) == b.charAt(j - 2))
+                    dp[i][j] = Math.max(dp[i][j], dp[i][j - 1] + 1);
+                if ((i == 1 && j == 1) || a.charAt(n - i) == b.charAt(j - 1))
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - 1] + 2);
             }
         }
-        int res = 0;
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == 0) {
-                int base = arr[(i << 1)];
-                int need;
-                if ((base & 1) == 0) {
-                    need = base + 1;
-                }else {
-                    need = base - 1;
-                }
-                if (arr[(i << 1) + 1] == need) continue;
-                for (int j = 0; j < n; j++) {
-                    if (row[j] == need) {
-                        row[j] = need;
-                        arr[(i << 1) + 1] = row[j];
-                        res++;
-                        break;
-                    }
-                }
-            }
-        }
-        return res;
+        return dp[n][m] == 1 ? 0 : dp[n][m];
     }
 }

@@ -1,4 +1,4 @@
-package basic_algorithm.prefixSum_difference;
+package basic_algorithm.prefixes_difference;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.StringTokenizer;
 
-public class DifferenceMatrix {
+public class PrefixSumMatrix {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
@@ -17,13 +17,13 @@ public class DifferenceMatrix {
         int m = in.nextInt();
         int q = in.nextInt();
         int[][] arr = new int[n][m];
+        int[][] matrix = new int[n + 1][m + 1];
         for (int i = 0; i < n; i++) {
             in.nextIntegerArray(arr[i]);
         }
-        int[][] differenceMatrix = new int[n + 2][m + 2];
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= m; j++) {
-                insertInDifferenceMatrix(differenceMatrix, i, j, i, j, arr[i - 1][j - 1]);
+                matrix[i][j] = matrix[i - 1][j] + matrix[i][j - 1] - matrix[i - 1][j - 1] + arr[i - 1][j - 1];
             }
         }
         while (q-- > 0) {
@@ -31,36 +31,11 @@ public class DifferenceMatrix {
             int lc = in.nextInt();
             int rr = in.nextInt();
             int rc = in.nextInt();
-            int add = in.nextInt();
-            insertInDifferenceMatrix(differenceMatrix, lr, lc, rr, rc, add);
-        }
-        arr[0][0] = differenceMatrix[1][1];
-        for (int j = 1; j < m; j++) {
-            arr[0][j] = arr[0][j - 1] + differenceMatrix[1][j + 1];
-        }
-        for (int i = 1; i < n; i++) {
-            arr[i][0] = arr[i - 1][0] + differenceMatrix[i + 1][1];
-        }
-        for (int i = 1; i < n; i++) {
-            for (int j = 1; j < m; j++) {
-                arr[i][j] = arr[i - 1][j] + arr[i][j - 1] - arr[i - 1][j - 1] + differenceMatrix[i + 1][j + 1];
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                out.print(arr[i][j] + " ");
-            }
-            out.println();
+            int sum = matrix[rr][rc] - matrix[lr - 1][rc] - matrix[rr][lc - 1] + matrix[lr - 1][lc - 1];
+            out.println(sum);
         }
         out.flush();
         out.close();
-    }
-
-    private static void insertInDifferenceMatrix(int[][] arr, int lr, int lc, int rr, int rc, int add) {
-        arr[lr][lc] += add;
-        arr[lr][rc + 1] -= add;
-        arr[rr + 1][lc] -= add;
-        arr[rr + 1][rc + 1] += add;
     }
 
     private static class MyWriter {

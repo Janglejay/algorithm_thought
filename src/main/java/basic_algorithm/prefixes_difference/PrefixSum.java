@@ -1,4 +1,4 @@
-package basic_algorithm.prefixSum_difference;
+package basic_algorithm.prefixes_difference;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.StringTokenizer;
 
-public class Difference {
+public class PrefixSum {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
@@ -17,23 +17,15 @@ public class Difference {
         int q = in.nextInt();
         int[] arr = new int[n];
         in.nextIntegerArray(arr);
-        int[] difference = new int[n + 2];
-        difference[1] = arr[0];
-        for (int i = 1; i < n; i++) {
-            difference[i + 1] = arr[i] - arr[i - 1];
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + arr[i - 1];
         }
         while (q-- > 0) {
             int l = in.nextInt();
             int r = in.nextInt();
-            int add = in.nextInt();
-            difference[l] += add;
-            difference[r + 1] -= add;
+            out.println(sum[r] - sum[l - 1]);
         }
-        arr[0] = difference[1];
-        for (int i = 1; i < n; i++) {
-            arr[i] = arr[i - 1] + difference[i + 1];
-        }
-        myOut.printArrayJoinSpace(arr);
         out.flush();
         out.close();
     }
