@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -15,6 +16,49 @@ public class SlidingWindow {
     static final PrintWriter out = myOut.out;
 
     public static void main(String[] args) {
+//        function1();
+        function2();
+    }
+
+    public static void function2() {
+        int n = in.nextInt();
+        int k = in.nextInt();
+        int[] arr = new int[n];
+        in.nextIntegerArray(arr);
+        int r = 0;
+        LinkedList<Integer> list = new LinkedList<>();
+        while (r < n) {
+            if (!list.isEmpty() && r - list.getFirst() + 1 > k) {
+                list.removeFirst();
+            }
+            while (!list.isEmpty() && arr[list.getLast()] >= arr[r]) {
+                list.removeLast();
+            }
+            list.add(r);
+            if (r >= k - 1)
+                out.print(arr[list.getFirst()] + " ");
+            r++;
+        }
+        out.println();
+        list.clear();
+        r = 0;
+        while (r < n) {
+            if (!list.isEmpty() && r - list.getFirst() + 1 > k) {
+                list.removeFirst();
+            }
+            while (!list.isEmpty() && arr[list.getLast()] <= arr[r]) {
+                list.removeLast();
+            }
+            list.add(r);
+            if (r >= k - 1)
+                out.print(arr[list.getFirst()] + " ");
+            r++;
+        }
+        out.flush();
+        out.close();
+    }
+
+    private static void function1() {
         int n = in.nextInt();
         int k = in.nextInt();
         int[] arr = new int[n];
