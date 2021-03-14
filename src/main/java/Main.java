@@ -1,32 +1,58 @@
+import data_structure.kmp.KMP;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
-    public static void main(String[] ars) {
-        int n = in.nextInt();
-        int[] arr = new int[n];
-        in.nextIntegerArray(arr);
-        Arrays.sort(arr);
-        int sum = 0;
-        for (int i = 0; i < n / 2; i++) sum -= arr[i];
-        for (int i = n / 2; i < n; i++) sum += arr[i];
-
-        out.println((n & 1) + " " + sum);
-        out.flush();
-        out.close();
-    }
-
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
 
+    public static void function2(String[] args) {
+        int n = in.nextInt();
+        String pattern = in.next();
+        char[] cp = pattern.toCharArray();
+        int m = in.nextInt();
+        String str = in.next();
+        char[] cs = str.toCharArray();
+        int[] nextArray = getNextArray2(cp);
+        for (int i = 0, j = -1; i < m; i++) {
+            while (j != -1 && cs[i] != cp[j + 1]) {
+                j = nextArray[j];
+            }
+            if (cs[i] == cp[j + 1]) {
+                j++;
+            }
+            if (j == n - 1) {
+                out.print(i - n + 1 + " ");
+                j = nextArray[j];
+            }
+        }
+        out.flush();
+        out.close();
+    }
+    private static int[] getNextArray2(char[] cs) {
+        int[] next = new int[cs.length];
+        next[0] = -1;
+        for (int i = 1, j = -1; i < cs.length; i++) {
+            while (j != -1 && cs[i] != cs[j + 1]) {
+                j = next[j];
+            }
+            if (cs[i] == cs[j + 1]) {
+                j++;
+            }
+            next[i] = j;
+        }
+        return next;
+    }
     private static class MyWriter {
 
-        private final PrintWriter out;
+        private PrintWriter out;
 
         private MyWriter() {
             out = new PrintWriter(System.out);
@@ -59,7 +85,7 @@ public class Main {
     }
 
     private static class MyScanner {
-        private final BufferedReader br;
+        private BufferedReader br;
         private StringTokenizer st;
 
         private MyScanner() {
@@ -109,6 +135,61 @@ public class Main {
             for (int i = 0; i < arr.length; i++) {
                 arr[i] = nextInt();
             }
+        }
+    }
+    private static class MyOptions {
+        private static double doubleAdd(double x, double y) {
+            BigDecimal bigDecimal = new BigDecimal(x);
+            BigDecimal bigDecimal2 = new BigDecimal(y);
+            return bigDecimal.add(bigDecimal2).doubleValue();
+        }
+
+        private static double subtractDouble(double x, double y) {
+            BigDecimal bigDecimal = new BigDecimal(x);
+            BigDecimal bigDecimal2 = new BigDecimal(y);
+            return bigDecimal.subtract(bigDecimal2).doubleValue();
+        }
+
+        private static double divideDouble(double x, double y) {
+            BigDecimal bigDecimal = new BigDecimal(x);
+            BigDecimal bigDecimal2 = new BigDecimal(y);
+            return bigDecimal.divide(bigDecimal2).doubleValue();
+        }
+
+        private static double multiplyDouble(double x, double y) {
+            BigDecimal bigDecimal = new BigDecimal(x);
+            BigDecimal bigDecimal2 = new BigDecimal(y);
+            return bigDecimal.multiply(bigDecimal2).doubleValue();
+        }
+
+        private static int[] findMax(int[] arr) {
+            int max = Integer.MIN_VALUE;
+            int index = -1;
+            for (int i = 0; i < arr.length; i++) {
+                if (max < arr[i]) {
+                    index = i;
+                    max = arr[i];
+                }
+            }
+            return new int[]{max, index};
+        }
+
+        private static int[] findMin(int[] arr) {
+            int min = Integer.MAX_VALUE;
+            int index = -1;
+            for (int i = 0; i < arr.length; i++) {
+                if (min > arr[i]) {
+                    index = i;
+                    min = arr[i];
+                }
+            }
+            return new int[]{min, index};
+        }
+
+        private static void swap(int[] arr, int i, int j) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
     }
 }

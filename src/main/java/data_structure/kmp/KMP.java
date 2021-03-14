@@ -13,6 +13,10 @@ public class KMP {
     static final PrintWriter out = myOut.out;
 
     public static void main(String[] args) {
+        function1();
+        function2();
+    }
+    private static void function1() {
         int n = in.nextInt();
         String pattern = in.next();
         char[] cp = new char[n + 1];
@@ -25,7 +29,7 @@ public class KMP {
         for (int i = 1; i < cs.length; i++) {
             cs[i] = str.charAt(i - 1);
         }
-        int[] nextArray = getNextArray(cp);
+        int[] nextArray = getNextArray1(cp);
         for (int i = 1, j = 0; i < cs.length; i++) {
             while (j != 0 && cs[i] != cp[j + 1]) {
                 j = nextArray[j];
@@ -41,10 +45,48 @@ public class KMP {
         out.flush();
         out.close();
     }
-    private static int[] getNextArray(char[] cs) {
+
+    private static int[] getNextArray1(char[] cs) {
         int[] next = new int[cs.length];
         for (int i = 2, j = 0; i < cs.length; i++) {
             while (j != 0 && cs[i] != cs[j + 1]) {
+                j = next[j];
+            }
+            if (cs[i] == cs[j + 1]) {
+                j++;
+            }
+            next[i] = j;
+        }
+        return next;
+    }
+    public static void function2() {
+        int n = in.nextInt();
+        String pattern = in.next();
+        char[] cp = pattern.toCharArray();
+        int m = in.nextInt();
+        String str = in.next();
+        char[] cs = str.toCharArray();
+        int[] nextArray = getNextArray2(cp);
+        for (int i = 0, j = -1; i < m; i++) {
+            while (j != -1 && cs[i] != cp[j + 1]) {
+                j = nextArray[j];
+            }
+            if (cs[i] == cp[j + 1]) {
+                j++;
+            }
+            if (j == n - 1) {
+                out.print(i - n + 1 + " ");
+                j = nextArray[j];
+            }
+        }
+        out.flush();
+        out.close();
+    }
+    private static int[] getNextArray2(char[] cs) {
+        int[] next = new int[cs.length];
+        next[0] = -1;
+        for (int i = 1, j = -1; i < cs.length; i++) {
+            while (j != -1 && cs[i] != cs[j + 1]) {
                 j = next[j];
             }
             if (cs[i] == cs[j + 1]) {

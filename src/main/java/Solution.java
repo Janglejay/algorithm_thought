@@ -1,29 +1,21 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 class Solution {
-    public String removeDuplicates(String S) {
-        List<Integer>[] lists = new ArrayList[26];
-        for (int i = 0; i < 26; i++) lists[i] = new ArrayList<>();
-        int divide = 0;
-        for (int i = 0; i < S.length(); i++) {
-            char c = S.charAt(i);
-            List<Integer> list = lists[c - 'a'];
-            list.add(i - divide);
-            if (list.size() > 1 && list.get(list.size() - 1) == list.get(list.size() - 2) + 1) {
-                divide += 2;
-                list.remove(list.size() - 1);
-                list.remove(list.size() - 1);
-            }
+    public double maxAverageRatio(int[][] classes, int number) {
+        PriorityQueue<int[]> queue = new PriorityQueue<>(
+                (a, b) -> Double.compare((b[0] + 1D) / (b[1] + 1D) - b[0] * 1D / b[1], (a[0] + 1D) / (a[1] + 1D) - a[0] * 1D / a[1])
+        );
+        for (int[] a : classes) queue.add(a);
+        for (int i = 0; i < number; i++) {
+            int[] a = queue.poll();
+            queue.add(new int[]{a[0] + 1, a[1] + 1});
         }
-        char[] charArray = new char[S.length() - divide];
-        for (int i = 0; i < lists.length; i++) {
-            for (int x : lists[i]) {
-                charArray[x] = (char)('a' + i);
-            }
+        double sum = 0;
+        for (int[] a : queue) {
+            sum += 1D * a[0] / a[1];
         }
-        String res = "";
-        for (char c : charArray) res += c;
-        return res;
+        return sum / classes.length;
     }
 }
