@@ -1,71 +1,94 @@
-package basic_algorithm2.recursion;
+package dynamic_programming2.states_compressing_dp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class InexplicableSwitch {
+public class LittleKing {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static String[] ss = new String[5];
-    static char[][] base = new char[5][5];
-    static char[][] bak = new char[5][5];
-    static int[] dx = new int[]{-1, 0, 1, 0, 0};
-    static int[] dy = new int[]{0, 1, 0, -1, 0};
+    private static int n;
+    private static int m;
+    private static int[] count;
+    private static List<Integer> legalState;
+    private static List<List<Integer>> legalTransfer;
 
-    private static void turn(int x, int y) {
-        for (int i = 0; i < 5; i++) {
-            int a = x + dx[i];
-            int b = y + dy[i];
-            if (a < 0 || a > 4 || b < 0 || b > 4) continue;
-            bak[a][b] ^= 1;
+    //x二进制表示中1的个数
+    private static int countNumber(int x) {
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res += (x >> i) & 1;
+        }
+        return res;
+    }
+
+    //判断状态是否合法,不能有相邻的1
+    private static boolean check(int state) {
+        for (int i = 0; i < n; i++) {
+            if (((state >> i) & 1) == 1 && ((state >> (i + 1)) & 1) == 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void init() {
+        count = new int[1 << n];
+        legalState = new ArrayList<>();
+        legalTransfer = new ArrayList<>();
+        //找到所有合法状态
+        for (int i = 0; i < 1 << n; i++) {
+            if (check(i)) {
+                legalState.add(i);
+                count[i] = countNumber(i);
+            }
+        }
+        for (int i = 0; i < legalState.size(); i++) {
+            legalTransfer.add(new ArrayList<>());
+        }
+        //枚举所有合法状态，找到合法转移
+        for (int i = 0; i < legalState.size(); i++) {
+            for (int j = 0; j < legalState.size(); j++) {
+                int a = legalState.get(i);
+                int b = legalState.get(j);
+                if ((a & b) == 0 && check(a | b)) {
+                    //存储的下标
+                    legalTransfer.get(i).add(j);
+                }
+            }
         }
     }
 
     public static void main(String[] args) {
-        int n = in.nextInt();
-        ss = new String[5];
-        base = new char[5][5];
-        bak = new char[5][5];
-        while (n-- > 0) {
-            for (int i = 0; i < 5; i++) ss[i] = in.next();
-            for (int i = 0; i < 5; i++) base[i] = ss[i].toCharArray();
-            int res = Integer.MAX_VALUE;
-            // 枚举所有第一行所有状态
-            for (int op = 0; op < 32; op++) {
-                int count = 0;
-                for (int i = 0; i < 5; i++)
-                    System.arraycopy(base[i], 0, bak[i], 0, 5);
-                for (int i = 0; i < 5; i++) {
-                    if ((op >> i & 1) == 1) {
-                        turn(0, i);
-                        count++;
+        n = in.nextInt();
+        m = in.nextInt();
+        init();
+        long[][][] dp = new long[n + 2][m + 1][1 << n];
+        //什么也不放算一种方案
+        dp[0][0][0] = 1;
+        //枚举到第i+1行
+        for (int i = 1; i <= n + 1; i++) {
+            for (int j = 0; j <= m; j++) {
+                //枚举第i行状态
+                for (int a = 0; a < legalState.size(); a++) {
+                    int stateA = legalState.get(a);
+                    //合法的第i-1行状态
+                    for (int b : legalTransfer.get(a)) {
+                        int stateB = legalState.get(b);
+                        int c = count[stateB];
+                        //国王数量不够
+                        if (j < c) continue;
+                        dp[i][j][stateA] += dp[i - 1][j - c][stateB];
                     }
                 }
-                for (int i = 0; i < 4; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        if (bak[i][j] == '0') {
-                            //按下他的下一个开关
-                            turn(i + 1, j);
-                            count++;
-                        }
-                    }
-                }
-                // 检查最后一行是否全亮
-                boolean success = true;
-                for (int i = 0; i < 5; i++) {
-                    if (bak[4][i] == '0') {
-                        success = false;
-                    }
-                }
-                if (success && res > count) res = count;
             }
-            if (res <= 6) out.println(res);
-            else out.println(-1);
         }
+        out.println(dp[n + 1][m][0]);
         out.flush();
         out.close();
     }

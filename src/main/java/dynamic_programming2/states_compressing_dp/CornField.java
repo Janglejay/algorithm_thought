@@ -1,71 +1,80 @@
-package basic_algorithm2.recursion;
+package dynamic_programming2.states_compressing_dp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class InexplicableSwitch {
+public class CornField {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static String[] ss = new String[5];
-    static char[][] base = new char[5][5];
-    static char[][] bak = new char[5][5];
-    static int[] dx = new int[]{-1, 0, 1, 0, 0};
-    static int[] dy = new int[]{0, 1, 0, -1, 0};
+    private static int n;
+    private static int m;
+    //用二进制表示地图
+    private static int[] map;
+    private static List<Integer> legalState;
+    private static List<List<Integer>> legalTransfer;
 
-    private static void turn(int x, int y) {
-        for (int i = 0; i < 5; i++) {
-            int a = x + dx[i];
-            int b = y + dy[i];
-            if (a < 0 || a > 4 || b < 0 || b > 4) continue;
-            bak[a][b] ^= 1;
+    private static boolean check(int state) {
+        for (int i = 0; i < m; i++) {
+            if (((state >> i) & 1) == 1 && (state >> (i + 1) & 1) == 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void init() {
+        legalState = new ArrayList<>();
+        legalTransfer = new ArrayList<>();
+        for (int i = 0; i < 1 << m; i++) {
+            if (check(i)) {
+                legalState.add(i);
+            }
+        }
+        for (int i = 0; i < legalState.size(); i++) legalTransfer.add(new ArrayList<>());
+        for (int i = 0; i < legalState.size(); i++) {
+            for (int j = 0; j < legalState.size(); j++) {
+                int a = legalState.get(i);
+                int b = legalState.get(j);
+                if ((a & b) == 0) {
+                    legalTransfer.get(i).add(j);
+                }
+            }
         }
     }
 
     public static void main(String[] args) {
-        int n = in.nextInt();
-        ss = new String[5];
-        base = new char[5][5];
-        bak = new char[5][5];
-        while (n-- > 0) {
-            for (int i = 0; i < 5; i++) ss[i] = in.next();
-            for (int i = 0; i < 5; i++) base[i] = ss[i].toCharArray();
-            int res = Integer.MAX_VALUE;
-            // 枚举所有第一行所有状态
-            for (int op = 0; op < 32; op++) {
-                int count = 0;
-                for (int i = 0; i < 5; i++)
-                    System.arraycopy(base[i], 0, bak[i], 0, 5);
-                for (int i = 0; i < 5; i++) {
-                    if ((op >> i & 1) == 1) {
-                        turn(0, i);
-                        count++;
-                    }
-                }
-                for (int i = 0; i < 4; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        if (bak[i][j] == '0') {
-                            //按下他的下一个开关
-                            turn(i + 1, j);
-                            count++;
-                        }
-                    }
-                }
-                // 检查最后一行是否全亮
-                boolean success = true;
-                for (int i = 0; i < 5; i++) {
-                    if (bak[4][i] == '0') {
-                        success = false;
-                    }
-                }
-                if (success && res > count) res = count;
+        n = in.nextInt();
+        m = in.nextInt();
+        map = new int[n + 2];
+        final int MOD = (int)1e8;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < m; j++) {
+                int t = in.nextInt();
+                //如果t是0代表不能种植，把他存为这一位已经占用了即为1
+                map[i] += (t ^ 1) << j;
             }
-            if (res <= 6) out.println(res);
-            else out.println(-1);
         }
+        init();
+        int[][] dp = new int[n + 2][1 << m];
+        dp[0][0] = 1;
+        for (int i = 1; i <= n + 1; i++) {
+            for (int a = 0; a < legalState.size(); a++) {
+                int stateA = legalState.get(a);
+                for (int b : legalTransfer.get(a)) {
+                    int stateB = legalState.get(b);
+                    //种植到了不能种植的地方
+                    if ((map[i] & stateA) != 0) continue;
+                    dp[i][stateA] = (dp[i][stateA] + dp[i - 1][stateB]) % MOD;
+                }
+            }
+        }
+        out.println(dp[n + 1][0]);
         out.flush();
         out.close();
     }

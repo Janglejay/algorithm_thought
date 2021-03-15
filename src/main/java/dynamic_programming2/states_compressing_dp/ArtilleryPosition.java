@@ -1,71 +1,93 @@
-package basic_algorithm2.recursion;
+package dynamic_programming2.states_compressing_dp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class InexplicableSwitch {
+public class ArtilleryPosition {
     static final MyScanner in = new MyScanner();
     static final MyWriter myOut = new MyWriter();
     static final PrintWriter out = myOut.out;
-    static String[] ss = new String[5];
-    static char[][] base = new char[5][5];
-    static char[][] bak = new char[5][5];
-    static int[] dx = new int[]{-1, 0, 1, 0, 0};
-    static int[] dy = new int[]{0, 1, 0, -1, 0};
+    private static int n;
+    private static int m;
+    private static int[] map;
+    private static int[] count;
+    private static List<Integer> legalState;
 
-    private static void turn(int x, int y) {
-        for (int i = 0; i < 5; i++) {
-            int a = x + dx[i];
-            int b = y + dy[i];
-            if (a < 0 || a > 4 || b < 0 || b > 4) continue;
-            bak[a][b] ^= 1;
+    private static int countNumber(int x) {
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            res += (x >> i) & 1;
+        }
+        return res;
+    }
+
+    private static boolean check(int state) {
+        for (int i = 0; i < m; i++) {
+            if (
+                    ((state >> i) & 1) == 1 && (((state >> (i + 1)) & 1) == 1 || ((state >> (i + 2)) & 1) == 1)
+            ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void init() {
+        legalState = new ArrayList<>();
+        count = new int[1 << m];
+        for (int i = 0; i < 1 << m; i++) {
+            if (check(i)) {
+                legalState.add(i);
+                count[i] = countNumber(i);
+            }
         }
     }
 
     public static void main(String[] args) {
-        int n = in.nextInt();
-        ss = new String[5];
-        base = new char[5][5];
-        bak = new char[5][5];
-        while (n-- > 0) {
-            for (int i = 0; i < 5; i++) ss[i] = in.next();
-            for (int i = 0; i < 5; i++) base[i] = ss[i].toCharArray();
-            int res = Integer.MAX_VALUE;
-            // 枚举所有第一行所有状态
-            for (int op = 0; op < 32; op++) {
-                int count = 0;
-                for (int i = 0; i < 5; i++)
-                    System.arraycopy(base[i], 0, bak[i], 0, 5);
-                for (int i = 0; i < 5; i++) {
-                    if ((op >> i & 1) == 1) {
-                        turn(0, i);
-                        count++;
-                    }
+        n = in.nextInt();
+        m = in.nextInt();
+        map = new int[n + 3];
+        //用滚动数组进行优化
+        //i,i-1必然是一个奇数一个偶数
+        int[][][] dp = new int[2][1 << m][1 << m];
+        char[][] charArray = new char[n + 1][m];
+        for (int i = 1; i <= n; i++) {
+            String str = in.next();
+            System.arraycopy(str.toCharArray(), 0, charArray[i], 0, m);
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (charArray[i][j] == 'H') {
+                    map[i] += 1 << j;
                 }
-                for (int i = 0; i < 4; i++) {
-                    for (int j = 0; j < 5; j++) {
-                        if (bak[i][j] == '0') {
-                            //按下他的下一个开关
-                            turn(i + 1, j);
-                            count++;
+            }
+        }
+        init();
+        for (int i = 1; i <= n + 2; i++) {
+            for (int a = 0; a < legalState.size(); a++) {
+                int stateA = legalState.get(a);
+                for (int b = 0; b < legalState.size(); b++) {
+                    int stateB = legalState.get(b);
+                    for (int c = 0; c < legalState.size(); c++) {
+                        int stateC = legalState.get(c);
+                        //第i行和第i-1行有放在不能放的地方
+                        if ((map[i] & stateA) != 0 || (map[i - 1] & stateB) != 0) {
+                            continue;
+                        }
+                        //不能有邻边
+                        if ((stateA & stateB) == 0 && (stateA & stateC) == 0 && (stateB & stateC) == 0) {
+                            dp[i & 1][stateA][stateB] = Math.max(dp[i & 1][stateA][stateB], dp[(i - 1) & 1][stateB][stateC] + count[stateA]);
                         }
                     }
                 }
-                // 检查最后一行是否全亮
-                boolean success = true;
-                for (int i = 0; i < 5; i++) {
-                    if (bak[4][i] == '0') {
-                        success = false;
-                    }
-                }
-                if (success && res > count) res = count;
             }
-            if (res <= 6) out.println(res);
-            else out.println(-1);
         }
+        out.println(dp[(n + 2) & 1][0][0]);
         out.flush();
         out.close();
     }
