@@ -1,21 +1,33 @@
-import java.util.Arrays;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
 class Solution {
-    public double maxAverageRatio(int[][] classes, int number) {
-        PriorityQueue<int[]> queue = new PriorityQueue<>(
-                (a, b) -> Double.compare((b[0] + 1D) / (b[1] + 1D) - b[0] * 1D / b[1], (a[0] + 1D) / (a[1] + 1D) - a[0] * 1D / a[1])
-        );
-        for (int[] a : classes) queue.add(a);
-        for (int i = 0; i < number; i++) {
-            int[] a = queue.poll();
-            queue.add(new int[]{a[0] + 1, a[1] + 1});
+    public int[][] generateMatrix(int n) {
+        int[][] res = new int[n][n];
+        int left = 0;
+        int right = n - 1;
+        int top = 0;
+        int bottom = n - 1;
+        int number = 0;
+        while (left <= right && top <= bottom) {
+            for (int i = left; i <= right; i++) {
+                res[top][i] = number++;
+            }
+            top++;
+            if (top > bottom) break;
+            for (int i = top; i <= bottom; i++) {
+                res[i][right] = number++;
+            }
+            right--;
+            if (left > right) break;
+            for (int i = right; i >= left; i--) {
+                res[bottom][i] = number++;
+            }
+            bottom--;
+            if (top > bottom) break;
+            for (int i = bottom; i >= top; i--) {
+                res[i][left] = number++;
+            }
+            left++;
+            if (left > right) break;
         }
-        double sum = 0;
-        for (int[] a : queue) {
-            sum += 1D * a[0] / a[1];
-        }
-        return sum / classes.length;
+        return res;
     }
 }
